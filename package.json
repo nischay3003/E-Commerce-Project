@@ -1,0 +1,20 @@
+{
+  "name": "e-commerce-project",
+  "version": "1.0.0",
+  "description": "Hello, This is my first professional project in which i am going to learn how to make projects professionally from scratch.\r I am building a basic E-Commerce Website in which we could sell or buy items.\r This will be a fun activity as i will be leaning how actually we work upon projects in industry.",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "start": "node index.js",
+    "dev": "nodemon index.js"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "dependencies": {
+    "express": "^5.1.0"
+  },
+  "devDependencies": {
+    "nodemon": "^3.1.10"
+  }
+}
