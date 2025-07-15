@@ -6,7 +6,7 @@ require('dotenv').config();
 async function addToCart(req, res) {
   try {
     const userId = req.user.id;
-    const { product_id, quantity } = req.body;
+    const { productId, quantity } = req.body;
 
 
     let cart = await Cart.findOne({ where: { user_id: userId } });
@@ -19,7 +19,7 @@ async function addToCart(req, res) {
     let cartItem = await CartItem.findOne({
       where: {
         cart_id: cart.id,
-        product_id
+        product_id:productId
       }
     });
 
@@ -29,7 +29,7 @@ async function addToCart(req, res) {
     } else {
       await CartItem.create({
         cart_id: cart.id,
-        product_id,
+        product_id:productId,
         quantity
       });
     }
@@ -92,14 +92,14 @@ async function removeFromCart(req,res) {
     }})
 
     if(!cartItem){
-        res.status(404).json({message:"Item Not Found In The Cart"});
+        return res.status(404).json({message:"Item Not Found In The Cart"});
     }
 
     await cartItem.destroy();
-    res.status(200).json({mesage:"Item removed from cart"});
+    return res.status(200).json({message:"Item removed from cart"});
     }catch(err){
         console.log(err);
-        res.status(500).json({message:"Failed to remove  item from cart"});
+        return res.status(500).json({message:"Failed to remove item from cart"});
     }
 
 
@@ -116,7 +116,7 @@ async function updateCartItemQuantity(req,res){
     if(!cart){
       return res.status(404).json({message:"Cart Not Found"})
     }
-    //check cart id herereeee----------
+    
     const cartItem=await CartItem.findOne({where:{
         cart_id:cart.id,
         product_id:productId
