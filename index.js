@@ -1,21 +1,25 @@
 const express= require('express');
+const sequelize = require('./config/db');
+
 const userRoutes=require('./routes/userRouter');
+const productRoutes=require('./routes/productRouter');
+const cartRoutes=require('./routes/cartRouter');
 const app=express();
 app.use(express.json());
-// app.use("/api/users",userRoutes);
-// app.post('/user',(req,res)=>{
-    
-// });
+app.use("/api/users",userRoutes);
+app.use("/api/products",productRoutes);
+app.use("/api/cart",cartRoutes);
 
-// app.get('/user:id',(req,res)=>{
-//     const userId = req.params.id;
-//     console.log("Fetching user with ID:", userId);
-//     res.send(`User with ID ${userId} fetched successfully`);
-// });
-app.get("/",(req,res)=>{
-    res.send("hello world");
-})
-
-app.listen(3000,()=>{
-    console.log("server is running on port 3000");
-});
+require('./models/userModel'); 
+require('./models/productModel');
+require('./models/cartItemModel');
+require('./models/cartModel');
+sequelize.sync({alter:true})
+  .then(() => {
+    app.listen(3000, () => {
+      console.log('✅ Server is running on port 3000');
+    });
+  })
+  .catch((err) => {
+    console.error('❌ Failed to sync DB:', err);
+  });
