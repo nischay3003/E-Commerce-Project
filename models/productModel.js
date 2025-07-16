@@ -1,6 +1,6 @@
 const sequelize = require('../config/db');       
 const { DataTypes } = require('sequelize');      
-
+const   Category=require('./categoryModel')
 const Product=sequelize.define('product',{
    id:{
     type:DataTypes.INTEGER,
@@ -20,6 +20,14 @@ const Product=sequelize.define('product',{
     type:DataTypes.STRING,
     allowNull:true,
     
+   },
+   category_id:{
+    type:DataTypes.INTEGER,
+    allowNull:true,
+    references:{
+        model:'category',
+        key:'id'
+    }
    }
 
 
@@ -27,5 +35,8 @@ const Product=sequelize.define('product',{
     timestamps:true,
     freezeTableName: true
 })
+Product.belongsTo(Category, { foreignKey: 'category_id' });
+Category.hasMany(Product, { foreignKey: 'category_id' });
+
 
 module.exports=Product;

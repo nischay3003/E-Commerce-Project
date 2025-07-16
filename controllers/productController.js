@@ -2,11 +2,13 @@ const Product=require('../models/productModel')
 
 async function createProduct(req,res) {
     try{
-        const{name,price,description}=req.body;
+        const{name,price,description,category_id}=req.body;
+        console.log(category_id)
         const product=await Product.create({
             name,
             price,
-            description
+            description,
+            category_id
         })
         res.status(200).json({message:"Product created successfully",product});
 

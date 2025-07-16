@@ -1,12 +1,13 @@
 const Cart = require('../models/cartModel');
 const CartItem = require('../models/cartItemModel');
 const Product = require('../models/productModel');
-require('dotenv').config();
 
 async function addToCart(req, res) {
   try {
     const userId = req.user.id;
-    const { productId, quantity } = req.body;
+    const productId=req.body.product_id;
+    const quantity=req.body.quantity;
+    console.log("Product Id:",productId);
 
 
     let cart = await Cart.findOne({ where: { user_id: userId } });
