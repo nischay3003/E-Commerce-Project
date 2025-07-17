@@ -10,8 +10,12 @@ async function makePayment(req,res){
 
     }
     //check if the payment hasn't already been made
+
     if(order.payment_status==="paid"){
         return res.status(400).json({message:"Payment has already been made for the order"});
+    }
+    if(amount!=order.total_price){
+        return res.status(400).json({message:"Amount is incorrect"});
     }
     const payment=await Payment.create(
         { 
