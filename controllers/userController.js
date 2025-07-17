@@ -1,28 +1,26 @@
-const bcrypt=require('bcrypt');
-const User=require('../models/userModel.js');
-const jwt=require('jsonwebtoken');
+const bcrypt = require('bcrypt');
+const User = require('../models/userModel.js');
+const jwt = require('jsonwebtoken');
 
-async function registerUser(req,res) {
-    try{
-
-    const {first_name,last_name,email,phone_number,password}=req.body;
-    const hashed_password=await bcrypt.hash(password,10);
-    const user= await User.create({
-        first_name,
-        last_name,
-        email,
-        hashed_password,
-        phone_number
+async function registerUser(req, res) {
+  try {
+    const { first_name, last_name, email, phone_number, password } = req.body;
+    const hashed_password = await bcrypt.hash(password, 10);
+    const user = await User.create({
+      first_name,
+      last_name,
+      email,
+      hashed_password,
+      phone_number
     });
-   
+
     const token = jwt.sign(
       { id: user.id, email: user.email },
       process.env.JWT_SECRET,
-
     );
 
-    res.status(200).json({
-      message: "Login successful",
+    res.status(201).json({ // Changed to 201 Created
+      message: "Registration successful",
       token,
       user: {
         id: user.id,
@@ -30,15 +28,10 @@ async function registerUser(req,res) {
         first_name: user.first_name
       }
     });
-    }
-    catch(err){
-        console.log(err);
-        res.status(500).json({message:"Registration failed"});
-
-
-    }
-
-    
+  } catch (err) {
+    console.log(err);
+    res.status(500).json({ message: "Registration failed" });
+  }
 }
 
 async function loginUser(req, res) {
@@ -48,7 +41,7 @@ async function loginUser(req, res) {
     const user = await User.findOne({ where: { email } });
 
     if (!user) {
-      return res.status(401).json({ message: "User doesn't exist" });
+      return res.status(404).json({ message: "User doesn't exist" }); // Changed to 404 Not Found
     }
 
     if (!password || !user.hashed_password) {
@@ -64,7 +57,6 @@ async function loginUser(req, res) {
     const token = jwt.sign(
       { id: user.id, email: user.email },
       process.env.JWT_SECRET,
-      
     );
 
     res.status(200).json({
@@ -82,21 +74,17 @@ async function loginUser(req, res) {
     res.status(500).json({ message: "Login failed due to server error" });
   }
 }
-async function getUserProfile(req,res){
-  try{
-    const user=req.user;
-    // const fullUser=await User.findByPk(req.user.id);
-    // console.log(fullUser.dataValues);
-    //get the full user
+
+async function getUserProfile(req, res) {
+  try {
+    const user = req.user;
     res.status(200).json({
-      message:"User Profile fetched successfully",
+      message: "User Profile fetched successfully",
       user
     });
-  }
-  catch(err){
-    res.status(401).json({message:"Failed to fetch user profile"})
+  } catch (err) {
+    res.status(500).json({ message: "Failed to fetch user profile" }); // Changed to 500 Internal Server Error
   }
 }
 
-
-module.exports =  {registerUser,loginUser,getUserProfile} ;
+module.exports = { registerUser, loginUser, getUserProfile };

@@ -50,7 +50,7 @@ async function getCart(req, res) {
     const cart = await Cart.findOne({ where: { user_id: userId } });
 
     if (!cart) {
-      return res.status(400).json({ message: "Cart is empty" });
+      return res.status(404).json({ message: "Cart not found" });
     }
 
     const cartItems = await CartItem.findAll({
@@ -78,8 +78,7 @@ async function removeFromCart(req,res) {
     try
     {
 
-        const productId=req.params.productId;
-       
+    const productId=req.params.productId;   
     const userId=req.user.id;
 
     const cart=await Cart.findOne({where:{user_id:userId}});
@@ -93,7 +92,7 @@ async function removeFromCart(req,res) {
     }})
 
     if(!cartItem){
-        return res.status(404).json({message:"Item Not Found In The Cart"});
+      return res.status(404).json({message:"Item Not Found In The Cart"});
     }
 
     await cartItem.destroy();
