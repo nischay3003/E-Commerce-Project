@@ -1,0 +1,23 @@
+services:
+  backend:         # Your app
+    build: .       # Build from current folder using Dockerfile
+    ports:
+      - "3000:3000"  # Map host port to container port
+    environment:
+      DATABASE_URL: postgres://postgres:mysecretpassword@db:5432/ecommerce
+    depends_on:
+      - db           # Wait for the DB to start
+
+  db:              # PostgreSQL service
+    image: postgres
+    environment:
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: mysecretpassword
+      POSTGRES_DB: ecommerce
+    ports:
+      - "5433:5432"  # Expose DB on your Windows port 5433
+    volumes:
+      - pgdata:/var/lib/postgresql/data  # Persist DB data
+
+volumes:
+  pgdata:          # Named volume for saving database data
