@@ -27,7 +27,7 @@ require('./models/orderItemModel');
 require('./models/addressModel');
 sequelize.sync({alter:true})
   .then(() => {
-    app.listen(3000, () => {
+    app.listen(PORT, () => {
       console.log('✅ Server is running on port 3000');
     });
   })
