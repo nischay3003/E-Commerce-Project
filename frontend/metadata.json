@@ -1,0 +1,5 @@
+{
+  "name": "ShoppinGo",
+  "description": "A modern e-commerce web application frontend built with React and Tailwind CSS. It features product browsing, categories, a shopping cart, and a user dashboard, all populated with dummy data for demonstration.",
+  "requestFramePermissions": []
+}
