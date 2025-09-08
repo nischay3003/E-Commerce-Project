@@ -28,6 +28,12 @@ const Payment=sequelize.define('payment',{
     status:{
         type:DataTypes.STRING,
         allowNull:false
+    },
+    transactionId:{
+        type:DataTypes.STRING,
+        allowNull:false,
+        unique:true
+
     }
 
 },{

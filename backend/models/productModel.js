@@ -21,6 +21,16 @@ const Product=sequelize.define('product',{
     allowNull:true,
     
    },
+   longDesc:{
+    type:DataTypes.TEXT,
+    allowNull:false
+   },
+   
+   specification:{
+        type:DataTypes.JSONB,
+        allowNull:false
+    }
+   ,
    category_id:{
     type:DataTypes.INTEGER,
     allowNull:true,

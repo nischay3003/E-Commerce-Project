@@ -10,7 +10,7 @@ const orderRoutes=require('./routes/orderRouter');
 const paymentRoutes=require('./routes/paymentRouter');
 const cookieParser = require('cookie-parser');
 const categoryRoutes=require("./routes/categoryRouter")
-
+const productImageRouter=require('./routes/productImageRouter');
 
 
 const PORT=process.env.PORT || 3000;
@@ -29,7 +29,7 @@ app.use("/api/orders",orderRoutes);
 app.use("/api/payments",paymentRoutes);
 app.use("/api/addresses",addressRoutes)
 app.use("/api/category",categoryRoutes);
-
+app.use("/api/productImages",productImageRouter);
 
 require('./models/paymentModel');
 require('./models/userModel'); 
@@ -40,7 +40,9 @@ require('./models/categoryModel')
 require('./models/orderModel')
 require('./models/orderItemModel');
 require('./models/addressModel');
-
+require('./models/bannersModel');
+require('./models/reviewsModel');
+require('./models/productImagesModel');
 
 
 sequelize.sync({alter:true})

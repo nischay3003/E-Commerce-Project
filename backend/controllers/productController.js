@@ -1,20 +1,43 @@
 const Product = require('../models/productModel');
 const client=require('../redis');
 async function createProduct(req, res) {
-    try {
-        const { name, price, description, category_id } = req.body;
-        const product = await Product.create({
-            name,
-            price,
-            description,
-            category_id
-        });
-        return res.status(201).json({ message: "Product created successfully", product });
-    } catch (err) {
-        console.log(err);
-        return res.status(500).json({ message: "Product creation failed" });
-    }
+  try {
+    const { name, price, description, category_id, specification, longDesc } = req.body;
+    const product = await Product.create({
+      name,
+      price,
+      description,
+      category_id,
+      specification,
+      longDesc
+    });
+    return res.status(201).json({ message: "Product created successfully", product });
+  } catch (err) {
+    console.error(err);
+    return res.status(500).json({ message: "Product creation failed" });
+  }
 }
+
+
+async function bulkProduct(req, res) {
+  try {
+    const products = req.body;
+    if (!Array.isArray(products) || products.length === 0) {
+      return res.status(400).json({ message: "Products array is required" });
+    }
+    const createdProducts = await Product.bulkCreate(products, {
+      validate: true,
+      returning: true
+    });
+    return res.status(201).json({ message: "Products created successfully", products: createdProducts });
+  } catch (err) {
+    console.error(err);
+    return res.status(500).json({ message: "Bulk product creation failed" });
+  }
+}
+
+
+
 
 async function getAllProducts(req, res) {
     try {
@@ -57,7 +80,7 @@ async function getProductById(req, res) {
 async function updateProduct(req, res) {
     try {
         const { id } = req.params;
-        const { name, price, description } = req.body;
+        const { name, price, description,longDesc,specification,category_id } = req.body;
         const product = await Product.findByPk(id);
 
         if (!product) {
@@ -67,7 +90,10 @@ async function updateProduct(req, res) {
         const updatedProduct = await product.update({
             name,
             description,
-            price
+            price,
+            longDesc,
+            specification,
+            category_id
         });
         return res.status(200).json({
             message: "Product updated successfully",
@@ -99,7 +125,10 @@ async function deleteProduct(req, res) {
                 id: deletedProduct.id,
                 name: deletedProduct.name,
                 description: deletedProduct.description,
-                price: deletedProduct.price
+                price: deletedProduct.price,
+                category_id:deletedProduct.category_id,
+                specification:deletedProduct.specification,
+                longDesc:deletedProduct.longDesc
             }
         });
     } catch (err) {
@@ -124,4 +153,4 @@ async function getProductsByCategory(req, res) {
     return res.status(500).json({ message: "Failed to fetch products" });
   }
 }
-module.exports = { createProduct, getAllProducts, getProductById, updateProduct, deleteProduct, getProductsByCategory };
+module.exports = { createProduct, getAllProducts, getProductById, updateProduct, deleteProduct, getProductsByCategory,bulkProduct };
