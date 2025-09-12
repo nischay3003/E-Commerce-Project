@@ -39,13 +39,17 @@ const HomePage: React.FC = () => {
     const fetchData = async () => {
       setLoading(true);
       // This is where a real API call would go.
+      
       try {
-        const [cats, prods] = await Promise.all([
-          getCategories(),
-          getHighRatedProducts()
-        ]);
-        setCategories(cats);
-        setFeaturedProducts(prods);
+        const catRes=await getCategories();
+        const prodRes=await getHighRatedProducts();
+      
+        // const [cats, prods] = await Promise.all([
+        //   getCategories(),
+        //   getHighRatedProducts()
+        // ]);
+        if(catRes)setCategories(catRes);
+        if (prodRes)setFeaturedProducts(prodRes);
       } catch (error) {
         console.error("Failed to fetch homepage data", error);
       } finally {

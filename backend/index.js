@@ -11,7 +11,8 @@ const paymentRoutes=require('./routes/paymentRouter');
 const cookieParser = require('cookie-parser');
 const categoryRoutes=require("./routes/categoryRouter")
 const productImageRouter=require('./routes/productImageRouter');
-
+const reviewRouter=require('./routes/reviewRouter');
+const bannerRouter=require('./routes/bannerRouter');
 
 const PORT=process.env.PORT || 3000;
 const app=express();
@@ -30,6 +31,9 @@ app.use("/api/payments",paymentRoutes);
 app.use("/api/addresses",addressRoutes)
 app.use("/api/category",categoryRoutes);
 app.use("/api/productImages",productImageRouter);
+app.use("/api/reviews",reviewRouter);
+app.use("/api/banners",bannerRouter);
+
 
 require('./models/paymentModel');
 require('./models/userModel'); 
@@ -44,6 +48,9 @@ require('./models/bannersModel');
 require('./models/reviewsModel');
 require('./models/productImagesModel');
 
+
+//load association
+require('./models/association');
 
 sequelize.sync({alter:true})
   .then(() => {

@@ -3,12 +3,12 @@ export interface Product {
   name: string;
   price: number;
   description: string;
-  longDescription: string;
-  imageUrls: string[];
+  longDesc: string;
+  images: string[];
   rating: number;
   reviewCount: number;
   categoryId: string;
-  specs?: { [key: string]: string };
+  specification?: { [key: string]: string };
 }
 
 export interface Category {

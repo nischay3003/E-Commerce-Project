@@ -23,6 +23,7 @@ const CategoryPage: React.FC = () => {
         ]);
         setProducts(prods);
         setCategory(cat);
+        console.log("Prod:",prods);
       } catch (error) {
         console.error("Failed to fetch category data", error);
       } finally {

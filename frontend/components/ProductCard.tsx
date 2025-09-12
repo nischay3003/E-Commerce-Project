@@ -21,10 +21,11 @@ const StarRating: React.FC<{ rating: number }> = ({ rating }) => {
 };
 
 const ProductCard: React.FC<ProductCardProps> = ({ product }) => {
+  
   return (
     <Link to={`/products/${product.id}`} className="group block bg-white rounded-lg shadow-md overflow-hidden hover:shadow-xl transition-shadow duration-300">
       <div className="relative">
-        <img className="w-full h-56 object-cover" src={product.imageUrls[0]} alt={product.name} />
+        <img className="w-full h-56 object-cover" src={product.images[0].imageUrl} alt={product.name} />
       </div>
       <div className="p-4">
         <h3 className="text-lg font-semibold text-slate-800 truncate group-hover:text-primary transition-colors">{product.name}</h3>
@@ -32,7 +33,8 @@ const ProductCard: React.FC<ProductCardProps> = ({ product }) => {
         <div className="flex justify-between items-center mt-4">
           <p className="text-xl font-bold text-slate-900">${product.price.toFixed(2)}</p>
           <div className="flex items-center">
-            <StarRating rating={product.rating} />
+            {console.log({product})}
+            <StarRating rating={product.averageRating} />
             <span className="text-xs text-slate-500 ml-2">({product.reviewCount})</span>
           </div>
         </div>

@@ -22,7 +22,7 @@ const User = sequelize.define('user', {
     allowNull: false,
     unique: true,
     validate: {
-      notEmpty: true,   // blocks ""
+      notEmpty: true,   
       isEmail: true     // checks valid email format
     }
   },

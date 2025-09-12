@@ -10,9 +10,12 @@ const Review=sequelize.define('review',{
     timestamps:true,
     freezeTableName: true
 })
-User.hasMany(Review);
-Product.hasMany(Review);
-Review.belongsTo(User, { foreignKey: { name: 'userId', allowNull: false } });
-Review.belongsTo(Product, { foreignKey: { name: 'productId', allowNull: false } });
+
+//Already associated in association.js
+
+// User.hasMany(Review);
+// Product.hasMany(Review,{foreignKey:'productId',as:'review'});
+// Review.belongsTo(User, { foreignKey: { name: 'userId', allowNull: false } });
+// // Review.belongsTo(Product, { foreignKey: { name: 'productId', allowNull: false } });
 
 module.exports=Review;

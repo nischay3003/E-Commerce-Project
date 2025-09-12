@@ -1,5 +1,17 @@
-const express=require('express');
-const { getCategories } = require('../controllers/categoryController');
-const router=express();
-router.get('/',getCategories);
-module.exports=router
+const express = require('express');
+const router = express();
+const {
+  getCategories,
+  getCategoryById,
+  createCategory,
+  updateCategory,
+  deleteCategory,
+} = require('../controllers/categoryController');
+
+router.get('/', getCategories);
+router.get('/:id', getCategoryById);
+router.post('/', createCategory);
+router.put('/:id', updateCategory);
+router.delete('/:id', deleteCategory);
+
+module.exports = router;

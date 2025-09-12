@@ -16,7 +16,7 @@ const ProductImage=sequelize.define('product_image',{
     timestamps:true,
     freezeTableName: true
 })
-Product.hasMany(ProductImage, { foreignKey: 'productId' });
+Product.hasMany(ProductImage, { foreignKey: 'productId' ,as:"images" });
 ProductImage.belongsTo(Product, { foreignKey: { name: 'productId', allowNull: false } });
 
 module.exports=ProductImage;

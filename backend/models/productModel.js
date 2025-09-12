@@ -1,6 +1,7 @@
 const sequelize = require('../config/db');       
 const { DataTypes } = require('sequelize');      
-const   Category=require('./categoryModel')
+const   Category=require('./categoryModel');
+const Review = require('./reviewsModel');
 const Product=sequelize.define('product',{
    id:{
     type:DataTypes.INTEGER,
@@ -14,6 +15,10 @@ const Product=sequelize.define('product',{
    },
    price:{
     type:DataTypes.DECIMAL(10,2),
+    get() {
+    const rawValue = this.getDataValue('price');
+    return rawValue === null ? null : parseFloat(rawValue);
+    },
     allowNull:false
    },
    description:{
@@ -45,8 +50,8 @@ const Product=sequelize.define('product',{
     timestamps:true,
     freezeTableName: true
 })
-Product.belongsTo(Category, { foreignKey: 'category_id' });
-Category.hasMany(Product, { foreignKey: 'category_id' });
-
+// Product.belongsTo(Category, { foreignKey: 'category_id' });
+// Category.hasMany(Product, { foreignKey: 'category_id' });
+// // Product.hasMany(Review,{foreignKey:'productId', as:'review'});
 
 module.exports=Product;
