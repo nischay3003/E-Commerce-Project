@@ -33,12 +33,18 @@ const ProductDetailPage: React.FC = () => {
     fetchProduct();
   }, [productId]);
 
-  const handleAddToCart = () => {
-    if (product) {
-      addToCart(product, quantity);
-      alert(`${quantity} of ${product.name} added to cart!`);
-    }
-  };
+  const handleAddToCart = async () => {
+      if (!product) return;
+
+      try {
+        await addToCart(product, quantity); // API call
+        alert(`${quantity} of ${product.name} added to cart!`);
+      } catch (error: any) {
+        console.error("Failed to add to cart:", error);
+        alert("Something went wrong while adding to cart. Please try again.");
+      }
+    };
+
 
   if (loading) {
     return <div className="text-center py-10">Loading product details...</div>;
@@ -117,7 +123,7 @@ const ProductDetailPage: React.FC = () => {
           <div className="mt-8 border-t pt-6">
             <h3 className="text-xl font-semibold text-slate-800 mb-4">Reviews</h3>
             <div className="space-y-4">
-              <p className="text-slate-500 italic">Dummy reviews section. Backend integration needed.</p>
+              {/* <p className="text-slate-500 italic">Dummy reviews section. Backend integration needed.</p> */}
               {/* Dummy Reviews
               <div className="border p-4 rounded-md">
                 <p className="font-bold">Alice</p>

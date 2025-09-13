@@ -52,15 +52,40 @@ const searchProducts = async (req, res) => {
     }
 
     const results = await Product.findAll({
-      where: {
-        [Op.or]: [
-          { name: { [Op.iLike]: `%${query}%` } },
-          { description: { [Op.iLike]: `%${query}%` } },
-          { longDesc: { [Op.iLike]: `%${query}%` } },
+        where: {
+          [Op.or]: [
+            { name: { [Op.iLike]: `%${query}%` } },
+            { description: { [Op.iLike]: `%${query}%` } },
+            { longDesc: { [Op.iLike]: `%${query}%` } },
+          ],
+        },
+        include: [
+          {
+            model: ProductImage,
+            as: 'images',
+            attributes: ['id', 'imageUrl'],
+          },
+          {
+            model: Review,
+            as: 'review',
+            attributes: [], // we don't need row-level review data here, just aggregates
+          },
         ],
-      },
-      include: [{ model: ProductImage, as: 'images', attributes: ['id', 'imageUrl'] }],
-    });
+        attributes: {
+          include: [
+            [
+              Sequelize.fn('ROUND', Sequelize.fn('AVG', Sequelize.col('review.rating')), 1),
+              'averageRating',
+            ],
+            [
+              Sequelize.fn('COUNT', Sequelize.col('review.id')),
+              'reviewCount',
+            ],
+          ],
+        },
+        group: ['product.id', 'images.id'],
+      });
+
 
     res.status(200).json(results);
   } catch (err) {

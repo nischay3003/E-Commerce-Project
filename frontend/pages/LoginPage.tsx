@@ -2,10 +2,11 @@
 import React, { useState } from 'react';
 import { useAuth } from '../context/AuthContext';
 import { useNavigate, Link } from 'react-router-dom';
-
+import {api, loginUser} from '../services/api';
 const LoginPage: React.FC = () => {
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
+  const [error,setError]=useState(null);
   const { login } = useAuth();
   const navigate = useNavigate();
 
@@ -13,9 +14,16 @@ const LoginPage: React.FC = () => {
     e.preventDefault();
     // In a real app, backend API call for login would be here.
     try {
-      await login(email, password);
-      navigate('/dashboard');
+      
+     const userRes=loginUser({
+      email,
+      password
+     })
+     console.log("User login Sucessfull");
+     navigate('/')
+      
     } catch (error) {
+      setError('Invalid Credentials');
       console.error("Login failed", error);
       alert("Login failed! (Check console for details)");
     }
@@ -25,6 +33,7 @@ const LoginPage: React.FC = () => {
     <div className="flex justify-center items-center py-10">
       <div className="w-full max-w-md bg-white p-8 rounded-xl shadow-lg">
         <h2 className="text-3xl font-bold text-center text-slate-800 mb-6">Login</h2>
+        {error?<p>{error}</p>:null}{/*Add styling here*/}
         <form onSubmit={handleSubmit} className="space-y-6">
           <div>
             <label htmlFor="email" className="block text-sm font-medium text-slate-700">Email Address</label>

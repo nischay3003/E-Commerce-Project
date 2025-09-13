@@ -1,14 +1,17 @@
 import React, { useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
-
+ import {registerUser} from '../services/api';
 const RegisterPage: React.FC = () => {
   const [name, setName] = useState('');
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [confirmPassword, setConfirmPassword] = useState('');
+  const [phone,setPhone]=useState('');
+  const [error,setError]=useState(null);
+
   const navigate = useNavigate();
 
-  const handleSubmit = (e: React.FormEvent) => {
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     if (password !== confirmPassword) {
       alert("Passwords do not match!");
@@ -16,14 +19,38 @@ const RegisterPage: React.FC = () => {
     }
     
     // Split full name into first and last name for the API call
-    const nameParts = name.trim().split(/\s+/);
-    const first_name = nameParts.shift() || '';
-    const last_name = nameParts.join(' ');
-    
-    // In a real app, backend API call for registration would be here.
-    console.log({ first_name, last_name, email, password });
-    alert("Registration successful! (Dummy data logged to console)");
-    navigate('/login');
+    try{
+        const nameParts = name.trim().split(/\s+/);
+        const first_name = nameParts.shift() || '';
+        const last_name = nameParts.join(' ');
+        
+        // In a real app, backend API call for registration would be here.
+        const userRes=registerUser({
+          first_name,
+          last_name,
+          email,
+          password,
+          phone_number:phone
+        })
+
+        
+        
+          console.log("User registered successfully");
+          navigate('/');
+          setError(null);
+        
+      
+    }
+    catch(err){
+        console.log(err);
+        setError("Invalid Credentials");
+    }
+
+
+
+    // console.log({ first_name, last_name, email, password });
+    // alert("Registration successful! (Dummy data logged to console)");
+    // navigate('/login');
   };
 
   return (
@@ -53,6 +80,21 @@ const RegisterPage: React.FC = () => {
               className="mt-1 block w-full px-3 py-2 border border-slate-300 rounded-md shadow-sm placeholder-slate-400 focus:outline-none focus:ring-primary focus:border-primary sm:text-sm"
             />
           </div>
+          <div>
+            <label htmlFor="phone-register" className="block text-sm font-medium text-slate-700">
+              Phone Number
+            </label>
+            <input
+              id="phone-register"
+              type="tel"
+              value={phone}
+              onChange={(e) => setPhone(e.target.value)}
+              required
+              className="mt-1 block w-full px-3 py-2 border border-slate-300 rounded-md shadow-sm placeholder-slate-400 focus:outline-none focus:ring-primary focus:border-primary sm:text-sm"
+              placeholder="e.g. +91 9876543210"
+            />
+          </div>
+
           <div>
             <label htmlFor="password-register" className="block text-sm font-medium text-slate-700">Password</label>
             <input

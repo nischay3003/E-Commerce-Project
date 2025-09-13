@@ -1,62 +1,85 @@
-
-import React, { createContext, useState, useContext, ReactNode } from 'react';
+import React, { createContext, useContext, ReactNode } from 'react';
 import { CartItem, Product } from '../types';
+import { api } from '../services/api';
 
 interface CartContextType {
-  cartItems: CartItem[];
-  addToCart: (product: Product, quantity: number) => void;
-  removeFromCart: (productId: string) => void;
-  updateQuantity: (productId: string, quantity: number) => void;
-  clearCart: () => void;
-  cartCount: number;
-  cartTotal: number;
+  addToCart: (product: Product, quantity: number) => Promise<void>;
+  removeFromCart: (productId: string) => Promise<void>;
+  updateQuantity: (productId: string, quantity: number) => Promise<void>;
+  clearCart: () => Promise<void>;
+  getCart: () => Promise<CartItem[]>;
 }
 
 const CartContext = createContext<CartContextType | undefined>(undefined);
 
 export const CartProvider: React.FC<{ children: ReactNode }> = ({ children }) => {
-  const [cartItems, setCartItems] = useState<CartItem[]>([]);
 
-  const addToCart = (product: Product, quantity: number) => {
-    setCartItems(prevItems => {
-      const existingItem = prevItems.find(item => item.product.id === product.id);
-      if (existingItem) {
-        return prevItems.map(item =>
-          item.product.id === product.id
-            ? { ...item, quantity: item.quantity + quantity }
-            : item
-        );
+  // Add product to cart
+  const addToCart = async (product: Product, quantity: number) => {
+    try {
+      const response = await api.post('/cart/add', { product_id: product.id, quantity });
+      if (response.status !== 200) {
+        console.warn("⚠️ Failed to add item:", response.data);
       }
-      return [...prevItems, { product, quantity }];
-    });
-  };
-
-  const removeFromCart = (productId: string) => {
-    setCartItems(prevItems => prevItems.filter(item => item.product.id !== productId));
-  };
-
-  const updateQuantity = (productId: string, quantity: number) => {
-    if (quantity <= 0) {
-      removeFromCart(productId);
-    } else {
-      setCartItems(prevItems =>
-        prevItems.map(item =>
-          item.product.id === productId ? { ...item, quantity } : item
-        )
-      );
+    } catch (error) {
+      console.error("❌ Error adding to cart:", error);
     }
   };
-  
-  const clearCart = () => {
-    setCartItems([]);
+
+  // Remove product from cart
+  const removeFromCart = async (productId: string) => {
+    try {
+      const response = await api.delete(`/cart/remove/${productId}`);
+      if (response.status !== 200) {
+        console.warn("⚠️ Failed to remove item:", response.data);
+      }
+    } catch (error) {
+      console.error("❌ Error removing from cart:", error);
+    }
   };
 
-  const cartCount = cartItems.reduce((acc, item) => acc + item.quantity, 0);
-  const cartTotal = cartItems.reduce((acc, item) => acc + item.product.price * item.quantity, 0);
+  // Update quantity
+  const updateQuantity = async (productId: string, quantity: number) => {
+    try {
+      const response = await api.put(`/cart/update/${productId}`, { quantity });
+      if (response.status !== 200) {
+        console.warn("⚠️ Failed to update quantity:", response.data);
+      }
+    } catch (error) {
+      console.error("❌ Error updating cart quantity:", error);
+    }
+  };
 
+  // Clear cart
+  const clearCart = async () => {
+    try {
+      const response = await api.post(`/cart/clear`);
+      if (response.status !== 200) {
+        console.warn("⚠️ Failed to clear cart:", response.data);
+      }
+    } catch (error) {
+      console.error("❌ Error clearing cart:", error);
+    }
+  };
+
+  // Fetch cart items
+  const getCart = async (): Promise<CartItem[]> => {
+    try {
+      const response = await api.get(`/cart`);
+      if (response.status === 200) {
+        return response.data;
+      } else {
+        console.warn("⚠️ Failed to fetch cart:", response.data);
+        return [];
+      }
+    } catch (error) {
+      console.error("❌ Error fetching cart:", error);
+      return [];
+    }
+  };
 
   return (
-    <CartContext.Provider value={{ cartItems, addToCart, removeFromCart, updateQuantity, clearCart, cartCount, cartTotal }}>
+    <CartContext.Provider value={{ addToCart, removeFromCart, updateQuantity, clearCart, getCart }}>
       {children}
     </CartContext.Provider>
   );
