@@ -19,6 +19,15 @@ export const registerUser = async (userData: {
   const res = await api.post('/users/register', userData);
   return res.data;
 };
+export const getDashboard = async (): Promise<{
+  user: User;
+  orders: Order[];
+  cart: any;
+  addresses: any[];
+}> => {
+  const res = await api.get('/dashboard'); // maps to backend /api/dashboard
+  return res.data; // { user, orders, cart, addresses }
+};
 
 export const loginUser = async (credentials: {
   email: string;
@@ -104,7 +113,7 @@ export const getUser = async (): Promise<User> => {
 };
 
 export const addAddress = async (address: Address): Promise<User> => {
-  const res = await api.post('/user/address', address);
+  const res = await api.post('/addresses', address);
   return res.data;
 };
 
@@ -112,16 +121,19 @@ export const updateAddress = async (
   index: number,
   address: Address
 ): Promise<User> => {
-  const res = await api.put(`/user/address/${index}`, address);
+  const res = await api.put(`/addresses/${index}`, address);
   return res.data;
 };
 
-export const removeAddress = async (index: number): Promise<User> => {
-  const res = await api.delete(`/user/address/${index}`);
+export const deleteAddress = async (index: number): Promise<User> => {
+  const res = await api.delete(`/addresses/${index}`);
   return res.data;
 };
 
-
+export const getUserAddresses = async () => {
+  const res = await api.get("/addresses"); // GET /addresses
+  return res.data;
+};
 // -------------------- ORDERS --------------------
 
 export const getOrders = async (): Promise<Order[]> => {
@@ -138,3 +150,4 @@ export const returnOrder = async (orderId: string): Promise<Order> => {
   const res = await api.post(`/orders/${orderId}/return`);
   return res.data;
 };
+//---------------------ADDRESSES-------------------------

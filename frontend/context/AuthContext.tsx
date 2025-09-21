@@ -1,6 +1,6 @@
 import React, { createContext, useState, useContext, ReactNode } from 'react';
 import { User, Address } from '../types';
-import { getUser, addAddress, removeAddress, updateAddress } from '../services/api';
+import { getUser, addAddress, deleteAddress, updateAddress } from '../services/api';
 
 interface AuthContextType {
   user: User | null;
@@ -38,7 +38,7 @@ export const AuthProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
 
   const removeUserAddress = async (addressIndex: number) => {
     if (!user) return;
-    const updatedUser = await removeAddress(addressIndex);
+    const updatedUser = await deleteAddress(addressIndex);
     setUser({ ...updatedUser });
   };
 

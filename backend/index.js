@@ -13,6 +13,8 @@ const categoryRoutes=require("./routes/categoryRouter")
 const productImageRouter=require('./routes/productImageRouter');
 const reviewRouter=require('./routes/reviewRouter');
 const bannerRouter=require('./routes/bannerRouter');
+const dashboardRoutes = require("./routes/dashboardRouter");
+
 
 const PORT=process.env.PORT || 3000;
 const app=express();
@@ -33,6 +35,7 @@ app.use("/api/category",categoryRoutes);
 app.use("/api/productImages",productImageRouter);
 app.use("/api/reviews",reviewRouter);
 app.use("/api/banners",bannerRouter);
+app.use("/api/dashboard", dashboardRoutes);
 
 
 require('./models/paymentModel');

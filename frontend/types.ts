@@ -22,7 +22,7 @@ export interface Address {
   city: string;
   state: string;
   country: string;
-  pincode: string;
+  pinCode: string;
 }
 
 export interface User {

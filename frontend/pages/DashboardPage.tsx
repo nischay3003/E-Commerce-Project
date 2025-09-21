@@ -1,43 +1,52 @@
 
 import React, { useState, useEffect } from 'react';
 import { useAuth } from '../context/AuthContext';
-import { getOrders } from '../services/api';
-import { Order } from '../types';
+import { getDashboard } from '../services/api';
+import { Order ,User} from '../types';
 import { useNavigate, Link } from 'react-router-dom';
 
 const DashboardPage: React.FC = () => {
-  const { user, isAuthenticated } = useAuth();
+   const [isAuth, setAuth] = useState(false);
   const [orders, setOrders] = useState<Order[]>([]);
+  const [cart, setCart] = useState<any>(null);
   const [loading, setLoading] = useState(true);
+  const [user, setUser] = useState<User | null>(null);
+  const [addresses, setAddresses] = useState<any[]>([]);
   const navigate = useNavigate();
-
+  
   useEffect(() => {
-    if (!isAuthenticated) {
-      navigate('/login');
-      return;
-    }
-
-    const fetchOrders = async () => {
+    const getProfile = async () => {
       try {
-        const userOrders = await getOrders();
-        setOrders(userOrders);
+        const profile = await getDashboard();
+        if(!profile.user) {
+          setAuth(false);
+          navigate('/login');
+          return;
+
+        }
+        setUser(profile.user)
+        setOrders(profile.orders);
+        setCart(profile.cart);
+        setAddresses(profile.addresses);
+        setAuth(true);
       } catch (error) {
-        console.error("Failed to fetch orders", error);
+        console.error("Failed to fetch profile", error);
       } finally {
         setLoading(false);
       }
     };
     
-    fetchOrders();
-  }, [isAuthenticated, navigate]);
+    getProfile();
+  }, [ navigate]);
 
-  if (!isAuthenticated) {
-    return null; 
+  if (!isAuth) {
+    return <p className="text-center text-red-500">Not authorized. Redirecting...</p>;
   }
   
   const fullName = user ? `${user.first_name} ${user.last_name}`.trim() : '';
-  
+  console.log("fullname",user);
   return (
+        
     <div className="space-y-8">
       <h1 className="text-4xl font-bold text-slate-900">Welcome back, {user?.first_name}!</h1>
 
