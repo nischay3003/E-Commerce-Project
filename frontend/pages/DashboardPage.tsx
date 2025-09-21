@@ -28,6 +28,8 @@ const DashboardPage: React.FC = () => {
         setOrders(profile.orders);
         setCart(profile.cart);
         setAddresses(profile.addresses);
+        console.log("address:",profile.addresses);
+        
         setAuth(true);
       } catch (error) {
         console.error("Failed to fetch profile", error);
@@ -63,9 +65,10 @@ const DashboardPage: React.FC = () => {
                     Manage Addresses
                 </Link>
             </div>
-            {user?.addresses && user.addresses.length > 0 ? (
+            
+            {addresses && addresses.length > 0 ? (
               <ul className="space-y-3 mt-2">
-                {user.addresses.map((addr, index) => (
+                {addresses.map((addr, index) => (
                   <li key={index} className="border p-3 rounded-md bg-slate-50">
                     <p className="text-slate-800">{addr.street}, {addr.city}, {addr.state} {addr.pincode}, {addr.country}</p>
                   </li>
