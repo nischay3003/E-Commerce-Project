@@ -110,6 +110,7 @@ async function updateCartItemQuantity(req,res){
   try {
     const productId=req.params.productId;
     const userId=req.user.id;
+    const quantity=req.body.quantity;
 
     const cart=await Cart.findOne({where:{user_id:userId}});
 
@@ -130,7 +131,7 @@ async function updateCartItemQuantity(req,res){
       return res.status(200).json("Item Removed From Cart");
     }
     else{
-      cartItem.quantity-=1;
+      cartItem.quantity=quantity;
       await cartItem.save();
       return res.status(200).json("Cart Item Updated")
 
