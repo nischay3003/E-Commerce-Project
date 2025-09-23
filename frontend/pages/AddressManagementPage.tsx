@@ -106,7 +106,7 @@ const AddressManagementPage: React.FC = () => {
           <h2 className="text-xl font-semibold text-slate-700 mb-4">Your Saved Addresses</h2>
           {addresses.length > 0 ? (
             <ul className="space-y-4">
-            
+            {/* {addresses && console.log("Addresses:",addresses)} */}
               {addresses.map((addr, index) => (
         <li key={addr.id ?? index} className="border p-4 rounded-lg bg-slate-50">
           {editingIndex === index && editingAddress ? (

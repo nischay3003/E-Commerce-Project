@@ -1,6 +1,6 @@
 import React, { createContext, useState, useContext, ReactNode } from 'react';
 import { User, Address } from '../types';
-import { getUser, addAddress, deleteAddress, updateAddress } from '../services/api';
+import { getUser, addAddress, deleteAddress, updateAddress, loginUser } from '../services/api';
 
 interface AuthContextType {
   user: User | null;
@@ -20,7 +20,8 @@ export const AuthProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
   const login = async (email: string, pass: string) => {
     // In a real app, you would validate credentials here
     console.log(`Logging in with ${email} and ${pass}`);
-    const userData = await getUser();
+    const userData = await loginUser({email,password:pass});
+    console.log("UserData:",userData);  
     setUser(userData);
   };
 

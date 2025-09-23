@@ -34,7 +34,7 @@ export const loginUser = async (credentials: {
   password: string;
 }): Promise<User> => {
   const res = await api.post('/users/login', credentials);
-  return res.data;
+  return res.data.user;
 };
 
 export const logoutUser = async (): Promise<{ message: string }> => {
@@ -138,8 +138,9 @@ export const getUserAddresses = async () => {
 
 export const getOrders = async (): Promise<Order[]> => {
   const res = await api.get('/orders');
-  return res.data;
+  return res.data.orders;
 };
+//check here
 
 export const cancelOrder = async (orderId: string): Promise<Order> => {
   const res = await api.post(`/orders/${orderId}/cancel`);
@@ -150,4 +151,4 @@ export const returnOrder = async (orderId: string): Promise<Order> => {
   const res = await api.post(`/orders/${orderId}/return`);
   return res.data;
 };
-//---------------------ADDRESSES-------------------------
+

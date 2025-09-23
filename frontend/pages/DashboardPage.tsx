@@ -6,31 +6,33 @@ import { Order ,User} from '../types';
 import { useNavigate, Link } from 'react-router-dom';
 
 const DashboardPage: React.FC = () => {
-   const [isAuth, setAuth] = useState(false);
+  //  const [isAuth, setAuth] = useState(false);
+  const {isAuthenticated,user}=useAuth();
   const [orders, setOrders] = useState<Order[]>([]);
   const [cart, setCart] = useState<any>(null);
   const [loading, setLoading] = useState(true);
-  const [user, setUser] = useState<User | null>(null);
+  // const [user, setUser] = useState<User | null>(null);
   const [addresses, setAddresses] = useState<any[]>([]);
   const navigate = useNavigate();
   
   useEffect(() => {
     const getProfile = async () => {
       try {
-        const profile = await getDashboard();
-        if(!profile.user) {
-          setAuth(false);
+       
+        if(!isAuthenticated) {
+          
           navigate('/login');
           return;
 
         }
-        setUser(profile.user)
+        const profile = await getDashboard();
+        console.log("Prfile",profile);
         setOrders(profile.orders);
         setCart(profile.cart);
         setAddresses(profile.addresses);
         console.log("address:",profile.addresses);
         
-        setAuth(true);
+        
       } catch (error) {
         console.error("Failed to fetch profile", error);
       } finally {
@@ -41,12 +43,19 @@ const DashboardPage: React.FC = () => {
     getProfile();
   }, [ navigate]);
 
-  if (!isAuth) {
+  if (!isAuthenticated) {
     return <p className="text-center text-red-500">Not authorized. Redirecting...</p>;
   }
   
-  const fullName = user ? `${user.first_name} ${user.last_name}`.trim() : '';
-  console.log("fullname",user);
+  const fullName = user ? `${user.first_name}`.trim() : '';
+  console.log("fullname",user.user);
+  const formatDateTime = (isoString: string) => {
+      if (!isoString) return '';
+      const [date, timeWithMs] = isoString.split('T');
+      const time = timeWithMs.split('.')[0]; 
+      return `${date} ${time}`;
+  };
+
   return (
         
     <div className="space-y-8">
@@ -92,7 +101,7 @@ const DashboardPage: React.FC = () => {
           <p>Loading orders...</p>
         ) : (
           <div className="space-y-4">
-            {orders.length > 0 ? orders.slice(0, 2).map(order => ( // Show summary of recent orders
+            {orders.length > 0 ? orders.slice(0, 2).map(order => ( //summary of recent
               <div key={order.id} className="border rounded-md p-4">
                 <div className="flex justify-between items-center mb-2">
                   <p className="font-bold text-primary">Order #{order.id}</p>
@@ -100,8 +109,9 @@ const DashboardPage: React.FC = () => {
                     {order.status}
                   </span>
                 </div>
-                <p className="text-sm text-slate-500">Date: {order.date}</p>
-                <p className="font-semibold">Total: ${order.total.toFixed(2)}</p>
+                <p className="text-sm text-slate-500">Date: {formatDateTime(order.createdAt)}</p>
+                <p className="font-semibold">Total: ${parseFloat(order.total_price).toFixed(2)}</p>
+                
               </div>
             )) : (
               <p className="text-slate-500">You have no past orders.</p>

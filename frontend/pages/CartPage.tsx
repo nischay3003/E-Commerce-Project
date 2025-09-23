@@ -3,8 +3,8 @@ import { useCart } from '../context/CartContext';
 import { Link } from 'react-router-dom';
 
 const CartPage: React.FC = () => {
-  const { cartItems, removeFromCart, updateQuantity, cartTotal } = useCart();
-
+  const { setCartItems,cartItems, removeFromCart, updateQuantity, cartTotal } = useCart();
+  console.log(cartItems);
   return (
     <div className="bg-white shadow-lg rounded-lg p-6 md:p-8">
       <h1 className="text-3xl font-bold text-slate-800 mb-6 border-b pb-4">Your Shopping Cart</h1>
@@ -21,21 +21,24 @@ const CartPage: React.FC = () => {
             {cartItems.map(item => (
               <div key={item.product.id} className="flex items-center justify-between border-b pb-4">
                 <div className="flex items-center space-x-4">
-                  <img src={item.product.imageUrls[0]} alt={item.product.name} className="w-20 h-20 object-cover rounded-md"/>
+                  {/* <img src={item.product.imageUrls[0]} alt={item.product.name} className="w-20 h-20 object-cover rounded-md"/> */}
                   <div>
                     <h2 className="font-semibold text-lg text-slate-800">{item.product.name}</h2>
                     <p className="text-slate-500">${item.product.price.toFixed(2)}</p>
                   </div>
                 </div>
                 <div className="flex items-center space-x-4">
-                  <input
-                    type="number"
-                    value={item.quantity}
-                    onChange={(e) => updateQuantity(item.product.id, parseInt(e.target.value))}
-                    className="w-16 border-slate-300 rounded-md text-center"
-                    min="1"
-                  />
-                  <button onClick={() => removeFromCart(item.product.id)} className="text-red-500 hover:text-red-700">
+                 <button
+                    onClick={() => updateQuantity(item.product_id, item.quantity - 1)}
+                    disabled={item.quantity <= 1}
+                    className="px-2 bg-gray-200 rounded"
+                  >-</button>
+                  <span>{item.quantity}</span>
+                  <button
+                    onClick={() => updateQuantity(item.product_id, item.quantity + 1)}
+                    className="px-2 bg-gray-200 rounded"
+                  >+</button>
+                  <button onClick={() => removeFromCart(item.product_id)} className="text-red-500 hover:text-red-700">
                     <svg className="w-6 h-6" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" /></svg>
                   </button>
                 </div>

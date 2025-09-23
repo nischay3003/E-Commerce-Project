@@ -3,6 +3,7 @@ import React, { useState } from 'react';
 import { useAuth } from '../context/AuthContext';
 import { useNavigate, Link } from 'react-router-dom';
 import {api, loginUser} from '../services/api';
+
 const LoginPage: React.FC = () => {
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
@@ -15,10 +16,11 @@ const LoginPage: React.FC = () => {
     // In a real app, backend API call for login would be here.
     try {
       
-     const userRes=loginUser({
-      email,
-      password
-     })
+    //  const userRes=loginUser({
+    //   email,
+    //   password
+    //  })
+     await login(email,password);
      console.log("User login Sucessfull");
      navigate('/')
       

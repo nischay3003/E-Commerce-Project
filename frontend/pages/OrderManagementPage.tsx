@@ -20,6 +20,7 @@ const OrderManagementPage: React.FC = () => {
       setLoading(true);
       try {
         const userOrders = await getOrders();
+        console.log("user order",userOrders);
         setOrders(userOrders);
       } catch (error) {
         console.error("Failed to fetch orders", error);
@@ -99,16 +100,17 @@ const OrderManagementPage: React.FC = () => {
               <div className="grid grid-cols-2 md:grid-cols-4 gap-4 mb-4 pb-4 border-b">
                   <div>
                       <p className="text-sm text-slate-500">ORDER PLACED</p>
-                      <p className="font-medium text-slate-800">{order.date}</p>
+                      <p className="font-medium text-slate-800">{order.createdAt}</p>
                   </div>
                   <div>
                       <p className="text-sm text-slate-500">TOTAL</p>
-                      <p className="font-medium text-slate-800">${order.total.toFixed(2)}</p>
+                      <p className="font-medium text-slate-800">${parseFloat(order.total_price).toFixed(2)}</p>
                   </div>
                   <div>
                       <p className="text-sm text-slate-500">STATUS</p>
-                      <span className={`px-3 py-1 text-xs font-medium rounded-full inline-block ${getStatusClass(order.status)}`}>
-                        {order.status}
+                      <span className={`px-3 py-1 text-xs font-medium rounded-full inline-block ${order.order_status}`}>
+                        {order.order_status=="processing"?"Processing":""}
+                        {order.order_status=="delievered"?"Delivered":""}
                       </span>
                   </div>
                   <div className="text-right">
@@ -119,10 +121,10 @@ const OrderManagementPage: React.FC = () => {
               
               <div className="flex flex-col md:flex-row md:justify-between md:items-start gap-4">
                 <div className="space-y-4 flex-grow">
-                    {order.items.map(item => (
+                    {order.order_items.map(item => (
                     <div key={item.product.id} className="flex items-center gap-4">
                         {/* Fix: The Product type has an `imageUrls` array, not a single `imageUrl`. Using the first image. */}
-                        <img src={item.product.imageUrls[0]} alt={item.product.name} className="w-16 h-16 object-cover rounded-md" />
+                        {/* <img src={item.product.imageUrls[0]} alt={item.product.name} className="w-16 h-16 object-cover rounded-md" /> */}
                         <div className="flex-grow">
                         <p className="font-semibold text-slate-800">{item.product.name}</p>
                         <p className="text-sm text-slate-600">Qty: {item.quantity} - ${item.product.price.toFixed(2)} each</p>
@@ -132,7 +134,7 @@ const OrderManagementPage: React.FC = () => {
                 </div>
 
                 <div className="flex-shrink-0 mt-4 md:mt-0 flex flex-col md:flex-row gap-2">
-                    {order.status === 'Processing' && (
+                    {order.order_status === 'processing' && (
                         <button 
                             onClick={() => handleCancelOrder(order.id)}
                             className="w-full md:w-auto bg-yellow-500 text-white px-4 py-2 rounded-md hover:bg-yellow-600 transition-colors text-sm font-medium"
@@ -140,7 +142,7 @@ const OrderManagementPage: React.FC = () => {
                             Cancel Order
                         </button>
                     )}
-                    {order.status === 'Delivered' && (
+                    {order.order_status === 'delivered' && (
                         <button 
                             onClick={() => handleReturnOrder(order.id)}
                             className="w-full md:w-auto bg-red-500 text-white px-4 py-2 rounded-md hover:bg-red-600 transition-colors text-sm font-medium"
