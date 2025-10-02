@@ -1,7 +1,7 @@
 const Cart = require('../models/cartModel');
 const CartItem = require('../models/cartItemModel');
 const Product = require('../models/productModel');
-
+const ProductImage=require('../models/productImagesModel')
 async function addToCart(req, res) {
   try {
     const userId = req.user.id;
@@ -55,13 +55,20 @@ async function getCart(req, res) {
 
     const cartItems = await CartItem.findAll({
       where: { cart_id: cart.id },
-      include: [
-        {
-          model: Product,
-          attributes: ['name', 'price', 'description']
-        }
-      ]
-    });
+        include: [
+          {
+            model: Product,
+            attributes: ['name', 'price', 'description'],
+           include: [
+            {
+              model: ProductImage,
+              as: 'images',
+              attributes: ['id', 'imageUrl']
+            }
+          ]
+          }
+        ]
+      });
 
     return res.status(200).json({
       cart_id: cart.id,
@@ -126,7 +133,7 @@ async function updateCartItemQuantity(req,res){
     if(!cartItem){
       res.status(404).json("Item Not Found In The Cart");
     }
-    if(cartItem.quantity==1){
+    if(cartItem.quantity==1 && quantity==0){
       await cartItem.destroy();
       return res.status(200).json("Item Removed From Cart");
     }

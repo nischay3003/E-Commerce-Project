@@ -45,3 +45,5 @@ export interface CartItem {
   product: Product;
   quantity: number;
 }
+
+export type PaymentMethod = 'Credit Card' | 'PayPal' | 'Google Pay' | null;

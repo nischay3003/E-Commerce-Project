@@ -8,6 +8,7 @@ const AppBar: React.FC = () => {
   const { cartCount } = useCart();
   const navigate = useNavigate();
   const [searchQuery, setSearchQuery] = useState('');
+  const [dropdownOpen, setDropdownOpen] = useState(false);
 
   const handleLogout = () => {
     logout();
@@ -54,16 +55,34 @@ const AppBar: React.FC = () => {
                 )}
             </Link>
             {isAuthenticated ? (
-              <div className="relative group">
-                <button className="flex items-center space-x-2 text-slate-600 hover:text-primary">
-                    <svg className="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M5.121 17.804A13.937 13.937 0 0112 16c2.5 0 4.847.655 6.879 1.804M15 10a3 3 0 11-6 0 3 3 0 016 0z" /></svg>
-                    <span>{user?.first_name}</span>
+              <div className="relative">
+                <button
+                  className="flex items-center space-x-2 text-slate-600 hover:text-primary"
+                  onMouseEnter={() => setDropdownOpen(true)}
+                >
+                  <svg className="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M5.121 17.804A13.937 13.937 0 0112 16c2.5 0 4.847.655 6.879 1.804M15 10a3 3 0 11-6 0 3 3 0 016 0z" />
+                  </svg>
+                  <span>{user?.first_name}</span>
                 </button>
-                <div className="absolute right-0 mt-2 w-48 bg-white rounded-md shadow-lg py-1 opacity-0 group-hover:opacity-100 transition-opacity duration-200 pointer-events-none group-hover:pointer-events-auto">
+
+                {dropdownOpen && (
+                  <div
+                    className="absolute right-0 mt-2 w-48 bg-white rounded-md shadow-lg py-1"
+                    onMouseEnter={() => setDropdownOpen(true)}
+                    onMouseLeave={() => setDropdownOpen(false)}
+                  >
                     <Link to="/dashboard" className="block px-4 py-2 text-sm text-slate-700 hover:bg-slate-100">My Account</Link>
-                    <button onClick={handleLogout} className="w-full text-left block px-4 py-2 text-sm text-slate-700 hover:bg-slate-100">Logout</button>
-                </div>
+                    <button
+                      onClick={handleLogout}
+                      className="w-full text-left block px-4 py-2 text-sm text-slate-700 hover:bg-slate-100"
+                    >
+                      Logout
+                    </button>
+                  </div>
+                )}
               </div>
+
             ) : (
               <Link to="/login" className="bg-primary text-white px-4 py-2 rounded-full hover:bg-primary-hover transition-colors">Login</Link>
             )}

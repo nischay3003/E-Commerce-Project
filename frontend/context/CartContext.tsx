@@ -1,7 +1,7 @@
 import React, { createContext, useContext, ReactNode,useState,useEffect } from 'react';
 import { CartItem, Product } from '../types';
 import { api } from '../services/api';
-
+import { useAuth } from './AuthContext';
 interface CartContextType {
   cartItems:CartItem[];
   cartTotal:number;
@@ -17,28 +17,53 @@ const CartContext = createContext<CartContextType | undefined>(undefined);
 
 export const CartProvider: React.FC<{ children: ReactNode }> = ({ children }) => {
   const [cartItems,setCartItems]=useState<CartItem[]>([]);
+  const {isAuthenticated}=useAuth();
+  useEffect(() => {
+    if (isAuthenticated === false) {
+      setCartItems([]);
+    }
+  }, [isAuthenticated]);
+
+  // Fetch cart when user becomes authenticated
+  useEffect(() => {
+    if (isAuthenticated === true) {
+      console.log('User authenticated, fetching cart...');
+      refreshCart();
+    }
+  }, [isAuthenticated]);
 
   const cartTotal = cartItems.reduce(
     (sum, item) => sum + item.product.price * item.quantity,
     0
   );
+ const refreshCart = async () => {
+    // Don't fetch cart if user is not authenticated
+    if (!isAuthenticated) {
+      console.log('User not authenticated, skipping cart fetch');
+      return;
+    }
 
-  const refreshCart = async () => {
     try {
+      console.log('Fetching cart from server...');
       const response = await api.get('/cart');
       if (response.status === 200) {
-        setCartItems(response.data.items);
+        console.log('Cart fetched successfully:', response.data.items);
+        setCartItems(response.data.items || []);
       } else {
         console.warn("⚠️ Failed to fetch cart:", response.data);
+        setCartItems([]);
       }
     } catch (error) {
       console.error("❌ Error fetching cart:", error);
+      setCartItems([]);
     }
   };
+ useEffect(() => {
+    if (isAuthenticated === true) {
+      refreshCart();
+    }
+  }, []); // Only run once on mount
 
-  useEffect(() => {
-    refreshCart(); // load once when provider mounts
-  }, []);
 
 
   // Add product to cart
@@ -66,6 +91,7 @@ export const CartProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
       console.error("❌ Error removing from cart:", error);
     }
   };
+
 
  // Optimistic UI update
 const updateQuantity = async (productId: string, quantity: number) => {

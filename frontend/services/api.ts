@@ -38,7 +38,7 @@ export const loginUser = async (credentials: {
 };
 
 export const logoutUser = async (): Promise<{ message: string }> => {
-  const res = await api.post('/auth/logout');
+  const res = await api.post('/users/logout');
   return res.data;
 };
 
@@ -108,8 +108,9 @@ export const getHighRatedProducts = async (): Promise<Product[]> => {
 // -------------------- USER --------------------
 
 export const getUser = async (): Promise<User> => {
-  const res = await api.get('/user');
-  return res.data;
+  const res = await api.get('/users/me');
+  console.log("res:::::",res);
+  return res.data.user;
 };
 
 export const addAddress = async (address: Address): Promise<User> => {

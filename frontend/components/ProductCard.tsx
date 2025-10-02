@@ -25,7 +25,7 @@ const ProductCard: React.FC<ProductCardProps> = ({ product }) => {
   return (
     <Link to={`/products/${product.id}`} className="group block bg-white rounded-lg shadow-md overflow-hidden hover:shadow-xl transition-shadow duration-300">
       <div className="relative">
-        {/* {console.log("product",product.images)} */}
+        {console.log("product",product.images.imageUrl)}
 
         <img className="w-full h-56 object-cover" src={product.images[0].imageUrl} alt={product.name} />
       </div>

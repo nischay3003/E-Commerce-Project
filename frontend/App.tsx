@@ -18,6 +18,8 @@ import OrderManagementPage from './pages/OrderManagementPage';
 import PrivacyPolicyPage from './pages/PrivacyPolicyPage';
 import TermsOfServicePage from './pages/TermsOfServicePage';
 import ContactUsPage from './pages/ContactUsPage';
+import CheckoutPage from './pages/CheckoutPage';
+import PaymentPage from './pages/PaymentPage';
 
 const App: React.FC = () => {
   return (
@@ -39,6 +41,8 @@ const App: React.FC = () => {
               <Route path="/privacy-policy" element={<PrivacyPolicyPage />} />
               <Route path="/terms-of-service" element={<TermsOfServicePage />} />
               <Route path="/contact" element={<ContactUsPage />} />
+              <Route path="/checkout" element={<CheckoutPage/>}/>
+              <Route path="/payment" element={<PaymentPage/>}/>
             </Routes>
           </Layout>
         </HashRouter>

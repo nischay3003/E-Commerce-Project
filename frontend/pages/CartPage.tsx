@@ -1,11 +1,29 @@
-import React from 'react';
+import React,{useEffect,useState} from 'react';
 import { useCart } from '../context/CartContext';
-import { Link } from 'react-router-dom';
-
+import { Link ,useNavigate} from 'react-router-dom';
+import {useAuth} from '../context/AuthContext';
 const CartPage: React.FC = () => {
   const { setCartItems,cartItems, removeFromCart, updateQuantity, cartTotal } = useCart();
+  const {isAuthenticated,user}=useAuth();
+   const handleCheckout = () => {
+    navigate('/checkout');
+  }
+  
+  const navigate=useNavigate();
   console.log(cartItems);
+ useEffect(() => {
+    if (isAuthenticated === false) {
+      navigate('/login'); // only redirect when we know user is not logged in
+    }
+  }, [isAuthenticated, navigate]);
+
+  // Show loading while authentication status is being determined
+  if (isAuthenticated === undefined) return <div>Loading...</div>;
+
+if (isAuthenticated === undefined) return <div>Loading...</div>;
+  
   return (
+    
     <div className="bg-white shadow-lg rounded-lg p-6 md:p-8">
       <h1 className="text-3xl font-bold text-slate-800 mb-6 border-b pb-4">Your Shopping Cart</h1>
       {cartItems.length === 0 ? (
@@ -19,9 +37,10 @@ const CartPage: React.FC = () => {
         <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
           <div className="lg:col-span-2 space-y-4">
             {cartItems.map(item => (
+              
               <div key={item.product.id} className="flex items-center justify-between border-b pb-4">
                 <div className="flex items-center space-x-4">
-                  {/* <img src={item.product.imageUrls[0]} alt={item.product.name} className="w-20 h-20 object-cover rounded-md"/> */}
+                  <img src={item.product.images[0].imageUrl} alt={item.product.name} className="w-20 h-20 object-cover rounded-md"/>
                   <div>
                     <h2 className="font-semibold text-lg text-slate-800">{item.product.name}</h2>
                     <p className="text-slate-500">${item.product.price.toFixed(2)}</p>
@@ -61,7 +80,9 @@ const CartPage: React.FC = () => {
                 <span>Total</span>
                 <span>${cartTotal.toFixed(2)}</span>
               </div>
-              <button className="w-full mt-6 bg-secondary text-white py-3 rounded-lg font-semibold hover:bg-secondary-hover transition-colors">
+              <button className="w-full mt-6 bg-secondary text-white py-3 rounded-lg font-semibold hover:bg-secondary-hover transition-colors"
+                      onClick={handleCheckout}
+              >
                 Proceed to Checkout
               </button>
             </div>

@@ -1,9 +1,10 @@
 import React, { useState, useEffect } from 'react';
-import { useParams } from 'react-router-dom';
+import { useNavigate, useParams } from 'react-router-dom';
 import { getProductById } from '../services/api';
 import { Product } from '../types';
 import { useCart } from '../context/CartContext';
 import ReviewCard from '@/components/ReviewCard';
+import { useAuth } from '@/context/AuthContext';
 const ProductDetailPage: React.FC = () => {
   const { productId } = useParams<{ productId: string }>();
   const { addToCart } = useCart();
@@ -11,6 +12,9 @@ const ProductDetailPage: React.FC = () => {
   const [loading, setLoading] = useState(true);
   const [quantity, setQuantity] = useState(1);
   const [selectedImageIndex, setSelectedImageIndex] = useState(0);
+  const {isAuthenticated}=useAuth();
+  const navigate=useNavigate();
+  console.log("Authenticated:",isAuthenticated);
 
   useEffect(() => {
     const fetchProduct = async () => {
@@ -35,7 +39,11 @@ const ProductDetailPage: React.FC = () => {
 
   const handleAddToCart = async () => {
       if (!product) return;
-
+      if(!isAuthenticated){
+        alert("Please Login to add to cart!");
+        navigate("/login");
+        return ;
+      }
       try {
         await addToCart(product, quantity); // API call
         alert(`${quantity} of ${product.name} added to cart!`);
