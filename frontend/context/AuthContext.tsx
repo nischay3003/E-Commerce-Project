@@ -7,6 +7,7 @@
     isAuthenticated: boolean;
     login: (email: string, pass: string) => Promise<void>;
     logout: () => void;
+    loading:boolean
     addUserAddress: (newAddress: Address) => Promise<void>;
     removeUserAddress: (addressIndex: number) => Promise<void>;
     updateUserAddress: (addressIndex: number, updatedAddress: Address) => Promise<void>;
@@ -16,6 +17,7 @@
 
   export const AuthProvider: React.FC<{ children: ReactNode }> = ({ children }) => {
     const [user, setUser] = useState<User | null>(null);
+    const [loading,setLoading]=useState(true);
     const isAuthenticated = !!user;
     useEffect(() => {
       const fetchUser = async () => {
@@ -24,6 +26,9 @@
           setUser(res);
         } catch (err) {
           setUser(null);
+          
+        } finally {
+          setLoading(false);
         }
       };
       fetchUser();
@@ -63,7 +68,7 @@
     };
 
     return (
-      <AuthContext.Provider value={{ user, isAuthenticated:!!user, login, logout, addUserAddress, removeUserAddress, updateUserAddress }}>
+      <AuthContext.Provider value={{ user, isAuthenticated,loading, login, logout, addUserAddress, removeUserAddress, updateUserAddress }}>
         {children}
       </AuthContext.Provider>
     );

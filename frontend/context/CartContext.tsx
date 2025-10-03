@@ -1,164 +1,107 @@
-import React, { createContext, useContext, ReactNode,useState,useEffect } from 'react';
-import { CartItem, Product } from '../types';
-import { api } from '../services/api';
-import { useAuth } from './AuthContext';
-interface CartContextType {
-  cartItems:CartItem[];
-  cartTotal:number;
-  addToCart: (product: Product, quantity: number) => Promise<void>;
-  removeFromCart: (productId: string) => Promise<void>;
-  updateQuantity: (productId: string, quantity: number) => Promise<void>;
-  clearCart: () => Promise<void>;
-  getCart: () => Promise<CartItem[]>;
-}
+  import React, { createContext, useContext, ReactNode,useState,useEffect } from 'react';
+  import { CartItem, Product } from '../types';
+  import { api } from '../services/api';
+  import { useAuth } from './AuthContext';
+  interface CartContextType {
+    cartItems:CartItem[];
+    cartTotal:number;
+    addToCart: (product: Product, quantity: number) => Promise<void>;
+    removeFromCart: (productId: string) => Promise<void>;
+    updateQuantity: (productId: string, quantity: number) => Promise<void>;
+    clearCart: () => Promise<void>;
+    getCart: () => Promise<CartItem[]>;
+  }
 
 
-const CartContext = createContext<CartContextType | undefined>(undefined);
+  const CartContext = createContext<CartContextType | undefined>(undefined);
+  export const CartProvider: React.FC<{ children: ReactNode }> = ({ children }) => {
+    const [cartItems, setCartItems] = useState<CartItem[]>([]);
+    const { isAuthenticated, loading } = useAuth();
 
-export const CartProvider: React.FC<{ children: ReactNode }> = ({ children }) => {
-  const [cartItems,setCartItems]=useState<CartItem[]>([]);
-  const {isAuthenticated}=useAuth();
-  useEffect(() => {
-    if (isAuthenticated === false) {
-      setCartItems([]);
-    }
-  }, [isAuthenticated]);
+    // Fetch cart from server
+    const refreshCart = async () => {
+      if (!isAuthenticated) return;
 
-  // Fetch cart when user becomes authenticated
-  useEffect(() => {
-    if (isAuthenticated === true) {
-      console.log('User authenticated, fetching cart...');
-      refreshCart();
-    }
-  }, [isAuthenticated]);
-
-  const cartTotal = cartItems.reduce(
-    (sum, item) => sum + item.product.price * item.quantity,
-    0
-  );
- const refreshCart = async () => {
-    // Don't fetch cart if user is not authenticated
-    if (!isAuthenticated) {
-      console.log('User not authenticated, skipping cart fetch');
-      return;
-    }
-
-    try {
-      console.log('Fetching cart from server...');
-      const response = await api.get('/cart');
-      if (response.status === 200) {
-        console.log('Cart fetched successfully:', response.data.items);
-        setCartItems(response.data.items || []);
-      } else {
-        console.warn("⚠️ Failed to fetch cart:", response.data);
+      try {
+        const response = await api.get('/cart');
+        if (response.status === 200) {
+          setCartItems(response.data.items || []);
+        } else {
+          setCartItems([]);
+        }
+      } catch (err) {
         setCartItems([]);
       }
-    } catch (error) {
-      console.error("❌ Error fetching cart:", error);
-      setCartItems([]);
-    }
-  };
- useEffect(() => {
-    if (isAuthenticated === true) {
-      refreshCart();
-    }
-  }, []); // Only run once on mount
+    };
 
+    // One effect to handle auth + cart refresh
+    useEffect(() => {
+      if (loading) return; // wait until auth status is resolved
 
-
-  // Add product to cart
-  const addToCart = async (product: Product, quantity: number) => {
-    try {
-      const response = await api.post('/cart/add', { product_id: product.id, quantity });
-      await refreshCart();
-      if (response.status !== 200) {
-        console.warn("⚠️ Failed to add item:", response.data);
+      if (isAuthenticated) {
+        refreshCart();
+      } else {
+        setCartItems([]);
       }
-    } catch (error) {
-      console.error("❌ Error adding to cart:", error);
-    }
-  };
+    }, [isAuthenticated, loading]); // runs only when auth is resolved
 
-  // Remove product from cart
-  const removeFromCart = async (productId: string) => {
-    try {
-      const response = await api.delete(`/cart/remove/${productId}`);
-      await refreshCart();
-      if (response.status !== 200) {
-        console.warn("⚠️ Failed to remove item:", response.data);
+    const cartTotal = cartItems.reduce(
+      (sum, item) => sum + item.product.price * item.quantity,
+      0
+    );
+
+    // Add product to cart
+    const addToCart = async (product: Product, quantity: number) => {
+      try {
+        const response = await api.post('/cart/add', { product_id: product.id, quantity });
+        if (response.status === 200) await refreshCart();
+      } catch (err) {
+        console.error(err);
       }
-    } catch (error) {
-      console.error("❌ Error removing from cart:", error);
-    }
-  };
+    };
 
-
- // Optimistic UI update
-const updateQuantity = async (productId: string, quantity: number) => {
-  if (!cartItems) return;
-
-  // Update local state immediately
-  setCartItems(prev =>
-    prev.map(item =>
-      item.product.id === productId ? { ...item, quantity } : item
-    )
-  );
-
-  // Call backend
-  try {
-    const response = await api.put(`/cart/update/${productId}`, { quantity });
-    if (response.status !== 200) {
-      console.warn("⚠️ Failed to update quantity:", response.data);
-      await refreshCart(); // fallback to refresh cart from server
-    }
-    await refreshCart();
-  } catch (error) {
-    console.error("❌ Error updating cart quantity:", error);
-    await refreshCart(); // fallback to refresh cart
-  }
-};
-
-  // Clear cart
-  const clearCart = async () => {
-    try {
-      const response = await api.post(`/cart/clear`);
-      await refreshCart();
-      if (response.status !== 200) {
-        console.warn("⚠️ Failed to clear cart:", response.data);
+    const removeFromCart = async (productId: string) => {
+      try {
+        const response = await api.delete(`/cart/remove/${productId}`);
+        if (response.status === 200) await refreshCart();
+      } catch (err) {
+        console.error(err);
       }
-    } catch (error) {
-      console.error("❌ Error clearing cart:", error);
-    }
+    };
+
+    const updateQuantity = async (productId: string, quantity: number) => {
+      setCartItems(prev =>
+        prev.map(item => item.product.id === productId ? { ...item, quantity } : item)
+      );
+      try {
+        const response = await api.put(`/cart/update/${productId}`, { quantity });
+        if (response.status !== 200) await refreshCart();
+      } catch (err) {
+        console.error(err);
+        await refreshCart();
+      }
+    };
+
+    const clearCart = async () => {
+      try {
+        const response = await api.delete('/cart/clear');
+        if (response.status === 200) await refreshCart();
+      } catch (err) {
+        console.error(err);
+      }
+    };
+
+    return (
+      <CartContext.Provider value={{ addToCart, removeFromCart, updateQuantity, clearCart, cartItems, cartTotal, refreshCart }}>
+        {children}
+      </CartContext.Provider>
+    );
   };
 
-  // // Fetch cart items
-  // const getCart = async (): Promise<CartItem[]> => {
-  //   try {
-  //     const response = await api.get(`/cart`);
-  //     if (response.status === 200) {
-  //       console.log("CART:",response.data);
-  //       return response.data;
-  //     } else {
-  //       console.warn("⚠️ Failed to fetch cart:", response.data);
-  //       return [];
-  //     }
-  //   } catch (error) {
-  //     console.error("❌ Error fetching cart:", error);
-  //     return [];
-  //   }
-  // };
-
-  return (
-    <CartContext.Provider value={{ addToCart, removeFromCart, updateQuantity, clearCart, cartItems,cartTotal,refreshCart }}>
-      {children}
-    </CartContext.Provider>
-  );
-};
-
-export const useCart = () => {
-  const context = useContext(CartContext);
-  if (context === undefined) {
-    throw new Error('useCart must be used within a CartProvider');
-  }
-  return context;
-};
+  export const useCart = () => {
+    const context = useContext(CartContext);
+    if (context === undefined) {
+      throw new Error('useCart must be used within a CartProvider');
+    }
+    return context;
+  };

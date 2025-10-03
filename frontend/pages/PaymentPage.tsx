@@ -5,15 +5,18 @@ import { useCart } from '@/context/CartContext';
 import { CreditCardIcon } from '../components/icons/CreditCardIcon';
 import { PayPalIcon } from '../components/icons/PayPalIcon';
 import { getUserAddresses } from '@/services/api';
+import { api } from '@/services/api';
+import { useAuth } from '@/context/AuthContext';
 
 const PaymentPage: React.FC = () => {
     const navigate = useNavigate();
-    const { cartItems, cartTotal } = useCart();
-
+    const { cartItems, cartTotal,clearCart,refreshCart } = useCart();
+    const {user}=useAuth();
     const [addresses, setAddresses] = useState<Address[]>([]);
     const [selectedAddressId, setSelectedAddressId] = useState<number | null>(null);
     const [paymentMethod, setPaymentMethod] = useState<PaymentMethod | null>(null);
     const [isOrderPlaced, setIsOrderPlaced] = useState(false);
+
 
     // Fetch addresses
     useEffect(() => {
@@ -48,9 +51,33 @@ const PaymentPage: React.FC = () => {
             alert("Please select a payment method.");
             return;
         }
-        // process payment here
-        setIsOrderPlaced(true);
-    };
+        // process payment 
+        const placeOrder = async () => {
+            try {
+                const res = await api.post('/orders/checkout', { userId: user.id });
+                if (res.status === 201) {
+                    //You dont need to clear cart as it is already 
+                    //being cleared from backend wehn order checkout is beign done so dont need to 
+                    //manage that thing
+                    
+
+                    await refreshCart();
+                    setIsOrderPlaced(true);
+                    
+                    
+                }
+            } catch (err) {
+                console.log(err);
+                alert('Failed to place order');
+            }
+        };
+        placeOrder();      
+
+};
+
+        
+        
+
 
     if (isOrderPlaced) {
         return (

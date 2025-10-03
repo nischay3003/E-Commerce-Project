@@ -1,16 +1,16 @@
 
 import React, { useState, useEffect } from 'react';
 import { useAuth } from '../context/AuthContext';
-import { getDashboard } from '../services/api';
+import { getDashboard,getRecentOrders } from '../services/api';
 import { Order ,User} from '../types';
 import { useNavigate, Link } from 'react-router-dom';
 
 const DashboardPage: React.FC = () => {
   //  const [isAuth, setAuth] = useState(false);
-  const {isAuthenticated,user}=useAuth();
+  const {isAuthenticated,user,loading}=useAuth();
   const [orders, setOrders] = useState<Order[]>([]);
   const [cart, setCart] = useState<any>(null);
-  const [loading, setLoading] = useState(true);
+  const [dashloading, setDashLoading] = useState(true);
   // const [user, setUser] = useState<User | null>(null);
   const [addresses, setAddresses] = useState<any[]>([]);
   const navigate = useNavigate();
@@ -19,15 +19,19 @@ const DashboardPage: React.FC = () => {
     const getProfile = async () => {
       try {
        
-        if(!isAuthenticated) {
+        if(!isAuthenticated && !loading) {
           
           navigate('/login');
           return;
 
         }
         const profile = await getDashboard();
-        console.log("Prfile",profile);
-        setOrders(profile.orders);
+        console.log("Profile",profile);
+        // setOrders(profile.orders);
+        const res=await getRecentOrders();
+        
+        await setOrders(res.recentOrders);
+       
         setCart(profile.cart);
         setAddresses(profile.addresses);
         console.log("address:",profile.addresses);
@@ -36,7 +40,7 @@ const DashboardPage: React.FC = () => {
       } catch (error) {
         console.error("Failed to fetch profile", error);
       } finally {
-        setLoading(false);
+        setDashLoading(false);
       }
     };
     
@@ -97,11 +101,12 @@ const DashboardPage: React.FC = () => {
                 Manage Orders
             </Link>
         </div>
-        {loading ? (
+        {dashloading ? (
           <p>Loading orders...</p>
         ) : (
           <div className="space-y-4">
-            {orders.length > 0 ? orders.slice(0, 2).map(order => ( //summary of recent
+            
+            {orders.length > 0 ? orders.map(order => ( //summary of recent
               <div key={order.id} className="border rounded-md p-4">
                 <div className="flex justify-between items-center mb-2">
                   <p className="font-bold text-primary">Order #{order.id}</p>

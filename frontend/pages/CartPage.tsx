@@ -4,7 +4,7 @@ import { Link ,useNavigate} from 'react-router-dom';
 import {useAuth} from '../context/AuthContext';
 const CartPage: React.FC = () => {
   const { setCartItems,cartItems, removeFromCart, updateQuantity, cartTotal } = useCart();
-  const {isAuthenticated,user}=useAuth();
+  const {isAuthenticated,user,loading}=useAuth();
    const handleCheckout = () => {
     navigate('/checkout');
   }
@@ -12,7 +12,7 @@ const CartPage: React.FC = () => {
   const navigate=useNavigate();
   console.log(cartItems);
  useEffect(() => {
-    if (isAuthenticated === false) {
+    if (isAuthenticated === false && loading===false) {
       navigate('/login'); // only redirect when we know user is not logged in
     }
   }, [isAuthenticated, navigate]);

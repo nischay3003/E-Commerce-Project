@@ -51,14 +51,13 @@ const OrderManagementPage: React.FC = () => {
   const handleCancelOrder = async (orderId: string) => {
     if (window.confirm('Are you sure you want to cancel this order?')) {
         try {
-            const updatedOrder = await cancelOrder(orderId);
-            if(updatedOrder) {
-                setOrders(prevOrders => 
-                    prevOrders.map(o => o.id === orderId ? updatedOrder : o)
-                );
-            } else {
-                alert("This order cannot be cancelled at this time.");
-            }
+         
+          const updatedOrder = await cancelOrder(orderId);
+            if (updatedOrder) {
+            // refetch all orders
+            const userOrders = await getOrders();
+            setOrders(userOrders);
+          }
         } catch (error) {
             console.error("Failed to cancel order", error);
             alert("Failed to process cancellation.");
@@ -110,7 +109,8 @@ const OrderManagementPage: React.FC = () => {
                       <p className="text-sm text-slate-500">STATUS</p>
                       <span className={`px-3 py-1 text-xs font-medium rounded-full inline-block ${order.order_status}`}>
                         {order.order_status=="processing"?"Processing":""}
-                        {order.order_status=="delievered"?"Delivered":""}
+                        {order.order_status=="delivered"?"Delivered":""}
+                        {order.order_status=="cancelled"?"Cancelled":""}
                       </span>
                   </div>
                   <div className="text-right">

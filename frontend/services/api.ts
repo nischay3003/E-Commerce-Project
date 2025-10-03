@@ -26,8 +26,17 @@ export const getDashboard = async (): Promise<{
   addresses: any[];
 }> => {
   const res = await api.get('/dashboard'); // maps to backend /api/dashboard
+  console.log("dashboard data: ",res.data);
   return res.data; // { user, orders, cart, addresses }
 };
+export const getRecentOrders=async ():Promise<{
+  recentOrders:Order[];
+}>=>{
+  const limit=5;
+  const res=await api.get(`/orders/recent?limit=${limit}`);
+  console.log("recent orders:",res.data);
+  return res.data; 
+}
 
 export const loginUser = async (credentials: {
   email: string;
@@ -144,7 +153,7 @@ export const getOrders = async (): Promise<Order[]> => {
 //check here
 
 export const cancelOrder = async (orderId: string): Promise<Order> => {
-  const res = await api.post(`/orders/${orderId}/cancel`);
+  const res = await api.put(`/orders/${orderId}/cancel`);
   return res.data;
 };
 

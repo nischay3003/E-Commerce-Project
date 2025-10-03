@@ -2,6 +2,7 @@ const Cart = require('../models/cartModel');
 const CartItem = require('../models/cartItemModel');
 const Product = require('../models/productModel');
 const ProductImage=require('../models/productImagesModel')
+const  sequelize  = require('../config/db');
 async function addToCart(req, res) {
   try {
     const userId = req.user.id;
@@ -42,7 +43,35 @@ async function addToCart(req, res) {
     return res.status(500).json({ message: "Failed to add to cart" });
   }
 }
+async function clearCart(req, res) {
+ 
+  const t = await sequelize.transaction(); // start transaction
+  try {
+    const userId = req.user.id;
 
+    // Find user's cart
+    console.log("UserId from clear cart:",userId);
+     let cart = await Cart.findOne({ where: { user_id: userId },transaction: t });
+    console.log("cartttttt fetcheddd---------",cart)
+    if (!cart) {
+      await t.rollback();
+      return res.status(400).json({ message: "Cart not found" });
+    }
+
+    // Delete cart items
+    await CartItem.destroy({ where: { cart_id: cart.id }, transaction: t });
+
+    // Delete the cart itself
+    await Cart.destroy({ where: { id: cart.id }, transaction: t });
+
+    await t.commit(); // commit transaction
+    return res.status(200).json({ message: "Cart cleared successfully" });
+  } catch (err) {
+    await t.rollback(); // rollback transaction on error
+    console.log(err);
+    return res.status(500).json({ message: "Unable to clear cart" });
+  }
+}
 async function getCart(req, res) {
   try {
     const userId = req.user.id;
@@ -151,4 +180,4 @@ async function updateCartItemQuantity(req,res){
 
 }
 
-module.exports = { addToCart, getCart ,removeFromCart,updateCartItemQuantity};
+module.exports = { addToCart, getCart ,removeFromCart,updateCartItemQuantity,clearCart};

@@ -87,10 +87,29 @@ async function getOrderDetails(req, res) {
         return res.status(500).json({ message: "Failed to fetch orders" });
     }
 }
+async function recentOrders(req,res){
+    console.log("Reached recentorders:");
+    
+    try{
+        const userId=req.user.id;
+        const limit= parseInt(req.query.limit) || 5;;
+        console.log("Limit:",limit);
+        const recentorders = await Order.findAll({
+            where: { user_id: userId },
+            order: [['createdAt', 'DESC']],
+            limit,
+            include: [{ model: OrderItem }]
+        });
+        return res.status(200).json({recentOrders:recentorders});
+    }catch(err){
+         console.error(err);
+        res.status(500).json({ message: "Failed to fetch recent orders" });
+    }
+}
 
 async function cancelOrder(req, res) {
     try {
-        const orderId = req.params.id;
+        const orderId = req.params.orderId;
         const order = await Order.findOne({ where: { id: orderId } });
         if (!order) {
             return res.status(404).json({ message: "Order Not Found" });
@@ -110,4 +129,4 @@ async function cancelOrder(req, res) {
     }
 }
 
-module.exports = { checkout, cancelOrder, getOrderDetails, getUserOrders };
+module.exports = { checkout, cancelOrder, getOrderDetails, getUserOrders ,recentOrders};
