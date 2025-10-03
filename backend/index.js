@@ -55,12 +55,17 @@ require('./models/productImagesModel');
 //load association
 require('./models/association');
 
-sequelize.sync({alter:true})
-  .then(() => {
-    app.listen(PORT ,() => {
-      console.log('✅ Server is running on port 3000');
-    });
-  })
-  .catch((err) => {
-    console.error('❌ Failed to sync DB:', err);
-  });
+// sequelize.sync()
+//   .then(() => {
+//     app.listen(PORT ,() => {
+//       console.log('✅ Server is running on port 3000');
+//     });
+//   })
+//   .catch((err) => {
+//     console.error('❌ Failed to sync DB:', err);
+//   });
+// DO NOT sync if tables exist
+app.listen(PORT, () => {
+  console.log('✅ Server is running on port 5000');
+});
+
