@@ -1,9 +1,9 @@
 // src/api.ts
 import { Product, Category, User, Order, Address } from '../types';
 import axios from 'axios';
-
+require('dotenv').config()
 export const api = axios.create({
-  baseURL:"http://localhost:3000/api",
+  baseURL:process.env.BACKEND_API,
   withCredentials: true, // sends HttpOnly cookies automatically
 });
 
