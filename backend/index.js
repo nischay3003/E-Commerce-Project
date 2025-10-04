@@ -21,7 +21,7 @@ const app=express();
 app.use(express.json());
 app.use(cookieParser())
 app.use(cors({
-  origin:["http://localhost:3000"],
+  origin:["http://localhost:3001"],
   credentials:true
   }
 ));
@@ -66,6 +66,6 @@ require('./models/association');
 //   });
 // DO NOT sync if tables exist
 app.listen(PORT, () => {
-  console.log('✅ Server is running on port 5000');
+  console.log('✅ Server is running on port ',PORT);
 });
 

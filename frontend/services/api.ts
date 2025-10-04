@@ -1,11 +1,12 @@
 // src/api.ts
 import { Product, Category, User, Order, Address } from '../types';
 import axios from 'axios';
+const BASE_URL = import.meta.env.VITE_BACKEND_API ;
 
 export const api = axios.create({
-  baseURL:process.env.BACKEND_API,
-  withCredentials: true, // sends HttpOnly cookies automatically
-});
+    baseURL:BASE_URL,
+    withCredentials: true, // sends HttpOnly cookies automatically
+  });
 
 // -------------------- AUTH --------------------
 
