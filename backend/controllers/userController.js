@@ -68,11 +68,12 @@ async function loginUser(req, res) {
       process.env.JWT_SECRET,
     );
       res.cookie('token', token, {
-      httpOnly: true,               
-      secure: false,                
-      sameSite: 'strict',           
-      maxAge: 60 * 60 * 1000        
-      });
+      httpOnly: true,       // Not accessible via JS
+      secure: true,         // Must be true for HTTPS (Render uses HTTPS)
+      sameSite: "none",     // Required for cross-origin requests
+      maxAge: 60 * 60 * 1000, // 1 hour
+    });
+
 
 
     res.status(200).json({
