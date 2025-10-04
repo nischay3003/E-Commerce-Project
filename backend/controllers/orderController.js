@@ -22,7 +22,7 @@ async function checkout(req, res) {
             const price = item.product.price;
             totalVal += quantity * price;
         }
-        const finalVal=totalVal*0.08;//for taxes
+        const finalVal=totalVal+totalVal*0.08;//for taxes
 
 
         const order = await Order.create({
